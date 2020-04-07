@@ -1,4 +1,5 @@
 global relaT:table[addr] of string = table();
+global relaT2:table[addr] of string = table();
 global countT:table[addr] of int = table();
 
 event http_header(c: connection, is_orig: bool, name: string, value: string)
@@ -6,11 +7,18 @@ event http_header(c: connection, is_orig: bool, name: string, value: string)
 	local ug:string = to_lower(c$http$user_agent);
 	if( c$id$resp_h in relaT)
 	{
-		if(ug == relaT[c$id$resp_h]){
-			countT[c$id$resp_h]=1;
-		}
+		if(ug == relaT[c$id$resp_h]){}
 		else{
-			countT[c$id$resp_h]+=1;
+			if(c$id$resp_h in relaT2){
+			   if(ug == relaT2[c$id$resp_h]){}
+			   else{
+			   countT[c$id$resp_h]+=1;
+			   }
+			}
+			else{
+			   relaT2[c$id$resp_h]=ug;
+			   countT[c$id$resp_h]+=1;
+			}
 		}
 	}
 	else{
